@@ -1,5 +1,6 @@
 import { Container, Stack, Typography } from '@mui/material'
 import { ExerciseSection } from './components/ExerciseSection'
+import { TodoList } from './features/todo-list/TodoList'
 import { ValidatedInputDemo } from './features/validated-input/ValidatedInputDemo'
 
 function App() {
@@ -27,7 +28,7 @@ function App() {
           title="Todo List"
           description="Add, edit, complete and delete todos — state managed with useState()."
         >
-          <Typography color="text.secondary">Coming soon…</Typography>
+          <TodoList />
         </ExerciseSection>
       </Stack>
     </Container>
