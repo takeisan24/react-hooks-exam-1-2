@@ -1,5 +1,6 @@
 import { Container, Stack, Typography } from '@mui/material'
 import { ExerciseSection } from './components/ExerciseSection'
+import { ValidatedInputDemo } from './features/validated-input/ValidatedInputDemo'
 
 function App() {
   return (
@@ -17,7 +18,7 @@ function App() {
           title="Form Input Validation with useEffect()"
           description="Each input validates its value inside useEffect whenever the value changes."
         >
-          <Typography color="text.secondary">Coming soon…</Typography>
+          <ValidatedInputDemo />
         </ExerciseSection>
 
         <ExerciseSection
