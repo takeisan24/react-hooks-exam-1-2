@@ -28,8 +28,14 @@ src/
     validated-input/              # Question 1
       ValidatedInput.tsx          # the component + Validator type
       validators.ts               # username / email / password / confirm rules
-      SignUpForm.tsx              # sign-up form built from four ValidatedInputs
-      registerAccount.ts          # fake sign-up API (1 s delay, some usernames taken)
+      sign-up/                    # beyond the exam: a full sign-up form
+        SignUpForm.tsx            # layout only: title, field groups, button, success alert
+        useSignUpForm.ts          # all form state and the submit logic (no JSX)
+        AccountFields.tsx         # Username + Email
+        PasswordFields.tsx        # Password + Confirm (memoized confirm validator)
+        validateSignUp.ts         # pure: first invalid field, in on-screen order
+        registerAccount.ts        # fake sign-up API (1 s delay, some usernames taken)
+        types.ts
     todo-list/                    # Question 2
       TodoList.tsx                # list state, handlers, undo snackbar
       TodoForm.tsx                # "add" form
@@ -93,6 +99,11 @@ product point of view. `SignUpForm` turns the demo into a working sign-up flow:
   username is taken. The form clears it in the username's `onChange` — no effect needed.
 - **Resetting after success remounts the form** with a new `key`, which resets each input's
   `isDirty` state without extra props.
+- **The sign-up form separates logic from layout.** `useSignUpForm` owns every piece of state
+  and the submit flow; the components only render. Fields are grouped by meaning
+  (account / password) rather than one file per input — *Confirm* depends on *Password*, so they
+  live together. Inputs are reached through `registerInput(field)` callback refs, so no ref is
+  read during render.
 
 ### The dependency array
 
@@ -106,8 +117,8 @@ product point of view. `SignUpForm` turns the demo into a working sign-up flow:
 `react/exhaustive-deps` is enabled as an **error** in `.oxlintrc.json`.
 
 **Confirm password is the case where `validate` matters.** Its validator depends on the
-password, so the form builds it with `useMemo(() => createConfirmPasswordValidator(password),
-[password])`. Type `abc12345` in both fields, then change *Password*: the confirm field's own
+password, so `PasswordFields` builds it with
+`useMemo(() => createConfirmPasswordValidator(values.password), [values.password])`. Type `abc12345` in both fields, then change *Password*: the confirm field's own
 value did not change, but its `validate` did, so the effect re-runs and shows "Passwords do not
 match". With `[value]` alone the stale "valid" state would stay on screen.
 

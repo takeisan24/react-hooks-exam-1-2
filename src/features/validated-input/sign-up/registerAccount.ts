@@ -1,8 +1,6 @@
-export interface SignUpData {
-  username: string
-  email: string
-  password: string
-}
+import type { SignUpValues } from './types'
+
+export type SignUpData = Omit<SignUpValues, 'confirmPassword'>
 
 export type SignUpResult = { ok: true } | { ok: false; usernameError: string }
 

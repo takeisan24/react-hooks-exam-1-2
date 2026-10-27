@@ -1,7 +1,7 @@
 import { Container, Stack, Typography } from '@mui/material'
 import { ExerciseSection } from './components/ExerciseSection'
 import { TodoList } from './features/todo-list/TodoList'
-import { SignUpForm } from './features/validated-input/SignUpForm'
+import { SignUpForm } from './features/validated-input/sign-up/SignUpForm'
 
 function App() {
   return (
