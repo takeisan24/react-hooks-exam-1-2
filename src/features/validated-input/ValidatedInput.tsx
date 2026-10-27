@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from 'react'
+import { useEffect, useId, useState, type Ref } from 'react'
 import { IconButton, InputAdornment, TextField } from '@mui/material'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import VisibilityIcon from '@mui/icons-material/Visibility'
@@ -15,9 +15,22 @@ export type Validator = (value: string) => string | null
 
 interface ValidatedInputProps {
   label: string
+  value: string
+  onChange: (value: string) => void
   validate: Validator
   /** Shown under the input while there is no error to display. */
   hint?: string
+  placeholder?: string
+  /**
+   * Show the validation result even if the user has not typed yet —
+   * set by the parent form after a submit attempt.
+   */
+  showValidation?: boolean
+  /** An error the validator cannot know about, e.g. one returned by the server. */
+  externalError?: string | null
+  disabled?: boolean
+  /** Forwarded to the native input, so the parent form can focus the first invalid field. */
+  ref?: Ref<HTMLInputElement>
   required?: boolean
   /** `password` also renders a show/hide toggle. */
   type?: 'text' | 'password'
@@ -27,15 +40,21 @@ interface ValidatedInputProps {
 
 export function ValidatedInput({
   label,
+  value,
+  onChange,
   validate,
   hint,
+  placeholder,
+  showValidation = false,
+  externalError = null,
+  disabled = false,
+  ref,
   required = false,
   type = 'text',
   inputMode = 'text',
   autoComplete,
 }: ValidatedInputProps) {
   const id = useId()
-  const [value, setValue] = useState('')
   const [isDirty, setIsDirty] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
@@ -52,8 +71,11 @@ export function ValidatedInput({
 
   // The error is always computed (even on mount); `isDirty` only gates its display,
   // so an untouched empty field does not greet the user with "required".
-  const showError = isDirty && error !== null
-  const showValid = isDirty && error === null
+  // The validator's error wins: the parent clears `externalError` when the value changes.
+  const displayedError = error ?? externalError
+  const isRevealed = isDirty || showValidation
+  const showError = isRevealed && displayedError !== null
+  const showValid = isRevealed && displayedError === null
   const isPassword = type === 'password'
 
   const endAdornment =
@@ -80,16 +102,19 @@ export function ValidatedInput({
       label={label}
       value={value}
       onChange={(event) => {
-        setValue(event.target.value)
+        onChange(event.target.value)
         setIsDirty(true)
       }}
+      inputRef={ref}
+      placeholder={placeholder}
+      disabled={disabled}
       type={isPassword && !isPasswordVisible ? 'password' : 'text'}
       required={required}
       autoComplete={autoComplete}
       error={showError}
       // Always render helper text (a blank line at minimum) so the layout does not
       // jump when an error appears.
-      helperText={showError ? error : (hint ?? ' ')}
+      helperText={showError ? displayedError : (hint ?? ' ')}
       fullWidth
       slotProps={{
         input: { endAdornment },

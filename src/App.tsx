@@ -1,7 +1,7 @@
 import { Container, Stack, Typography } from '@mui/material'
 import { ExerciseSection } from './components/ExerciseSection'
 import { TodoList } from './features/todo-list/TodoList'
-import { ValidatedInputDemo } from './features/validated-input/ValidatedInputDemo'
+import { SignUpForm } from './features/validated-input/SignUpForm'
 
 function App() {
   return (
@@ -17,9 +17,9 @@ function App() {
           id="q1"
           label="Question 1"
           title="Form Input Validation with useEffect()"
-          description="Each input validates its value inside useEffect whenever the value changes."
+          description="Each input validates its value inside useEffect whenever the value changes; submitting re-checks every field."
         >
-          <ValidatedInputDemo />
+          <SignUpForm />
         </ExerciseSection>
 
         <ExerciseSection

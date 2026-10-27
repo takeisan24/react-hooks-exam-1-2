@@ -25,3 +25,14 @@ export const validatePassword: Validator = (value) => {
   if (!/\d/.test(value)) return 'Password must include at least one number'
   return null
 }
+
+// Depends on another field, so it cannot live at module scope: memoize the result on
+// `password`. Each new password yields a new function, which re-runs the confirm field's
+// validation effect even though its own value did not change.
+export const createConfirmPasswordValidator =
+  (password: string): Validator =>
+  (value) => {
+    if (value === '') return 'Please confirm your password'
+    if (value !== password) return 'Passwords do not match'
+    return null
+  }
